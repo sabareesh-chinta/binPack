@@ -287,15 +287,6 @@ func (p *Packer) Pack() *Bin {
 	return nil
 }
 
-// unfitItem moves p.Items[0] to p.UnfitItems.
-func (p *Packer) unfitItem() {
-	if len(p.Items) == 0 {
-		return
-	}
-	p.UnfitItems = append(p.UnfitItems, p.Items[0])
-	p.Items = p.Items[1:]
-}
-
 // packToBin packs items to bin b. Returns unpacked items.
 func (p *Packer) packToBin(b *Bin, items []*Item) (unpacked []*Item) {
 	if !b.PutItem(items[0], startPosition) {
@@ -329,31 +320,10 @@ func (p *Packer) packToBin(b *Bin, items []*Item) (unpacked []*Item) {
 		}
 
 		if !fitted {
-			// for b2 := p.getBiggerBinThan(b); b2 != nil; b2 = p.getBiggerBinThan(b) {
-			// 	left := p.packToBin(b2, append(b2.Items, i))
-			// 	if len(left) == 0 {
-			// 		b = b2
-			// 		fitted = true
-			// 		break
-			// 	}
-			// }
-
-			// if !fitted {
 			unpacked = append(unpacked, i)
-			// }
 		}
 	}
 	return unpacked
-}
-
-func (p *Packer) getBiggerBinThan(b *Bin) *Bin {
-	v := b.GetVolume()
-	for _, b2 := range p.Bins {
-		if b2.GetVolume() > v {
-			return b2
-		}
-	}
-	return nil
 }
 
 // FindFittedBin finds bin in which item i will be fitted into.
