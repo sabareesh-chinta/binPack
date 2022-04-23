@@ -1,13 +1,13 @@
 bp3d
 ====
 
-3D Bin Packing implementation based on [this paper](http://www.cs.ukzn.ac.za/publications/erick_dube_507-034.pdf). The code is based on [binpacking by bom-d-van](https://github.com/bom-d-van/binpacking) but
-modified to allow flexible bins and use `float64` instead of `int`.
+3D Bin Packing implementation based on [this paper](https://github.com/bom-d-van/binpacking/blob/master/erick_dube_507-034.pdf). The code is based on [binpacking by gedex](https://github.com/gedex/bp3d) but
+modified to identify a single bin that fits all the items when one exists.
 
 ## Install
 
 ```
-go get github.com/gedex/bp3d
+go get github.com/schinta-heidi/bp3d
 ```
 
 ## Usage
@@ -24,18 +24,21 @@ p.AddItem(bp3d.NewItem("Item 1", 2, 2, 1, 2))
 p.AddItem(bp3d.NewItem("Item 2", 3, 3, 2, 3))
 
 // Pack items to bins.
-if err := p.Pack(); err != nil {
-	log.Fatal(err)
+out := p.Pack()
+if out == nil {
+	log.Fatal(out)
 }
 
-// Each bin, b, in p.Bins might have packed items in b.Items
+out is the smallest bin that can accommodate all the input items
+
 ```
 
 See [`example/example.go`](./example/example.go)
 
 ## Credit
 
-* http://www.cs.ukzn.ac.za/publications/erick_dube_507-034.pdf
+* hhttps://github.com/bom-d-van/binpacking/blob/master/erick_dube_507-034.pdf
+* https://github.com/gedex/bp3d
 * https://github.com/bom-d-van/binpacking
 
 ## License
