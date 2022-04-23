@@ -97,6 +97,11 @@ func (b *Bin) PutItem(item *Item, p Pivot) (fit bool) {
 	return
 }
 
+// EmptyBin removes all items in bin b
+func (b *Bin) EmptyBin() {
+	b.Items = nil
+}
+
 func (b *Bin) String() string {
 	return fmt.Sprintf("%s(%vx%vx%v, max_weight:%v)", b.GetName(), b.GetWidth(), b.GetHeight(), b.GetDepth(), b.GetMaxWeight())
 }
@@ -268,21 +273,29 @@ func (p *Packer) AddItem(items ...*Item) {
 	p.Items = append(p.Items, items...)
 }
 
-func (p *Packer) Pack() error {
+func (p *Packer) Pack() *Bin {
 	sort.Sort(BinSlice(p.Bins))
 	sort.Sort(ItemSlice(p.Items))
 
 	// TODO(gedex): validate bins volumes. this is the reason we need error
 	// to be returned before iterating items.
 
-	for len(p.Items) > 0 {
-		bin := p.FindFittedBin(p.Items[0])
-		if bin == nil {
-			p.unfitItem()
-			continue
-		}
+	// for len(p.Items) > 0 {
+	// 	bin := p.FindFittedBin(p.Items[0])
+	// 	if bin == nil {
+	// 		p.unfitItem()
+	// 		continue
+	// 	}
 
-		p.Items = p.packToBin(bin, p.Items)
+	// 	p.Items = p.packToBin(bin, p.Items)
+	// }
+
+	for _, bin := range p.Bins {
+		unfilled := p.packToBin(bin, p.Items)
+		if len(unfilled) == 0 {
+			return bin
+		}
+		bin.EmptyBin()
 	}
 
 	return nil
@@ -301,9 +314,9 @@ func (p *Packer) unfitItem() {
 func (p *Packer) packToBin(b *Bin, items []*Item) (unpacked []*Item) {
 	if !b.PutItem(items[0], startPosition) {
 
-		if b2 := p.getBiggerBinThan(b); b2 != nil {
-			return p.packToBin(b2, items)
-		}
+		// if b2 := p.getBiggerBinThan(b); b2 != nil {
+		// 	return p.packToBin(b2, items)
+		// }
 
 		return p.Items
 	}
@@ -335,22 +348,21 @@ func (p *Packer) packToBin(b *Bin, items []*Item) (unpacked []*Item) {
 		}
 
 		if !fitted {
-			for b2 := p.getBiggerBinThan(b); b2 != nil; b2 = p.getBiggerBinThan(b) {
-				left := p.packToBin(b2, append(b2.Items, i))
-				if len(left) == 0 {
-					b = b2
-					fitted = true
-					break
-				}
-			}
+			// for b2 := p.getBiggerBinThan(b); b2 != nil; b2 = p.getBiggerBinThan(b) {
+			// 	left := p.packToBin(b2, append(b2.Items, i))
+			// 	if len(left) == 0 {
+			// 		b = b2
+			// 		fitted = true
+			// 		break
+			// 	}
+			// }
 
-			if !fitted {
-				unpacked = append(unpacked, i)
-			}
+			// if !fitted {
+			unpacked = append(unpacked, i)
+			// }
 		}
 	}
-
-	return
+	return unpacked
 }
 
 func (p *Packer) getBiggerBinThan(b *Bin) *Bin {
