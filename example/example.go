@@ -21,8 +21,6 @@ func main() {
 	p.AddBin(bp3d.NewBin("Bin 8", 4, 3, 5, 25))
 	p.AddBin(bp3d.NewBin("Bin 9", 7, 7, 7, 50))
 
-	// p.AddBin(bp3d.NewBin("Medium Bin", 100, 150, 200, 1000))
-
 	// Add items.
 	p.AddItem(bp3d.NewItem("Item 1", 5, 4, 2, 2))
 	p.AddItem(bp3d.NewItem("Item 2", 3, 3, 2, 3))
