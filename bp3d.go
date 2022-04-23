@@ -277,19 +277,6 @@ func (p *Packer) Pack() *Bin {
 	sort.Sort(BinSlice(p.Bins))
 	sort.Sort(ItemSlice(p.Items))
 
-	// TODO(gedex): validate bins volumes. this is the reason we need error
-	// to be returned before iterating items.
-
-	// for len(p.Items) > 0 {
-	// 	bin := p.FindFittedBin(p.Items[0])
-	// 	if bin == nil {
-	// 		p.unfitItem()
-	// 		continue
-	// 	}
-
-	// 	p.Items = p.packToBin(bin, p.Items)
-	// }
-
 	for _, bin := range p.Bins {
 		unfilled := p.packToBin(bin, p.Items)
 		if len(unfilled) == 0 {
@@ -297,7 +284,6 @@ func (p *Packer) Pack() *Bin {
 		}
 		bin.EmptyBin()
 	}
-
 	return nil
 }
 
@@ -313,11 +299,6 @@ func (p *Packer) unfitItem() {
 // packToBin packs items to bin b. Returns unpacked items.
 func (p *Packer) packToBin(b *Bin, items []*Item) (unpacked []*Item) {
 	if !b.PutItem(items[0], startPosition) {
-
-		// if b2 := p.getBiggerBinThan(b); b2 != nil {
-		// 	return p.packToBin(b2, items)
-		// }
-
 		return p.Items
 	}
 
